@@ -17,9 +17,26 @@ SiteTrack is a beginner-friendly full-stack web application built with HTML, CSS
 ## Folder Structure
 
 ```text
-construction-tracker/
+construction-site-2/
+  .env.example
   api/
     index.js
+  models/
+    Project.js
+    Update.js
+  public/
+    assets/
+    css/
+      landing.css
+      login.css
+      style.css
+    js/
+      app.js
+      landing.js
+      login.js
+    index.html
+    landing.html
+    login.html
   src/
     config/
       constants.js
@@ -37,23 +54,12 @@ construction-tracker/
       updateRoutes.js
     utils/
       projectUtils.js
+  uploads/
   app.js
+  package.json
+  README.md
   server.js
-  models/
-    Project.js
-    Update.js
-  public/
-    landing.html
-    login.html
-    index.html
-    css/
-      landing.css
-      login.css
-      style.css
-    js/
-      landing.js
-      login.js
-      app.js
+  vercel.json
 ```
 
 ## Syllabus Concepts Used
