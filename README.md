@@ -18,12 +18,30 @@ SiteTrack is a beginner-friendly full-stack web application built with HTML, CSS
 
 ```text
 construction-tracker/
+  api/
+    index.js
+  src/
+    config/
+      constants.js
+      database.js
+      upload.js
+    controllers/
+      authController.js
+      projectController.js
+      updateController.js
+    middlewares/
+      projectValidation.js
+    routes/
+      authRoutes.js
+      projectRoutes.js
+      updateRoutes.js
+    utils/
+      projectUtils.js
+  app.js
   server.js
   models/
     Project.js
     Update.js
-  routes/
-    updates.js
   public/
     landing.html
     login.html
@@ -52,9 +70,24 @@ construction-tracker/
 
 ```bash
 npm install
-$env:MONGODB_URI="your_mongodb_connection_string"
 npm start
 ```
+
+Create a local environment file first:
+
+1. Copy `.env.example` to `.env`.
+2. Set `MONGODB_URI` in `.env`.
+
+For development with auto-restart:
+
+```bash
+npm run dev
+```
+
+Entry points:
+
+- Local development: `server.js`
+- Vercel deployment: `api/index.js`
 
 Open:
 
