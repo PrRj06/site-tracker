@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SiteTrack — Construction Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js from CDN — no installation needed -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🏗️</span>
+      <span class="brand-text">SiteTrack</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+        <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
+      </button>
+      <button class="nav-item" onclick="showSection('submit')" id="nav-submit">
+        <span class="nav-icon">📝</span><span class="nav-label">Submit Update</span>
+      </button>
+      <button class="nav-item" onclick="showSection('updates')" id="nav-updates">
+        <span class="nav-icon">📋</span><span class="nav-label">All Updates</span>
+      </button>
+      <button class="nav-item" onclick="showSection('sites')" id="nav-sites">
+        <span class="nav-icon">📍</span><span class="nav-label">Site Progress</span>
+      </button>
+      <!-- Admin-only panel nav — hidden for builder/manager -->
+      <button class="nav-item nav-admin-only hidden" onclick="showSection('admin')" id="nav-admin">
+        <span class="nav-icon">🛡️</span><span class="nav-label">Admin Panel</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <!-- Role badge -->
+      <div class="role-badge" id="roleBadge">
+        <span class="role-dot-sidebar" id="roleDotSidebar"></span>
+        <span id="roleBadgeText">Builder</span>
+      </div>
+      <div class="user-info-sidebar">
+        <span class="user-avatar" id="sidebarAvatar">U</span>
+        <div>
+          <span class="user-name" id="sidebarName">User</span>
+          <span class="user-role" id="sidebarRole">builder</span>
+          <span class="user-role" id="sidebarProject">Project</span>
+        </div>
+      </div>
+      <!-- Theme toggle -->
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark/light mode">
+        <span id="themeIcon">☀️</span>
+      </button>
+      <button class="logout-btn" onclick="logout()">⏻ Logout</button>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main-content">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <p class="page-subtitle" id="pageSubtitle">Overview of all construction activity</p>
+      </div>
+      <div class="topbar-actions">
+        <!-- Notification bell -->
+        <button class="icon-btn" onclick="toggleNotifications()" title="Notifications" id="bellBtn">
+          🔔 <span class="bell-badge hidden" id="bellBadge">0</span>
+        </button>
+        <!-- CSV Export -->
+        <button class="icon-btn" onclick="exportCSV()" title="Export CSV">📥 Export</button>
+        <!-- Print -->
+        <button class="icon-btn" onclick="printReport()" title="Print Report">🖨️ Print</button>
+      </div>
+    </div>
+
+    <!-- Notification dropdown -->
+    <div class="notif-panel hidden" id="notifPanel">
+      <div class="notif-header">⚠️ Sites with no update in 2+ days</div>
+      <div id="notifList"><p style="padding:12px;color:var(--text-muted)">Loading...</p></div>
+    </div>
+
+    <!-- ══ DASHBOARD ══ -->
+    <section id="section-dashboard" class="section active">
+      <!-- Stat cards with counter animation -->
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent:#F59E0B">
+          <div class="stat-icon">📋</div>
+          <div class="stat-body">
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">Total Updates</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#22C55E">
+          <div class="stat-icon">🏗️</div>
+          <div class="stat-body">
+            <div class="stat-value" id="stat-sites">0</div>
+            <div class="stat-label">Active Sites</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#3B82F6">
+          <div class="stat-icon">👷</div>
+          <div class="stat-body">
+            <div class="stat-value" id="stat-workers">0</div>
+            <div class="stat-label">Workers Deployed</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#A855F7">
+          <div class="stat-icon">📈</div>
+          <div class="stat-body">
+            <div class="stat-value" id="stat-avg">0%</div>
+            <div class="stat-label">Avg Progress</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="charts-row">
+        <div class="card chart-card">
+          <div class="card-header"><h2>Progress by Site</h2></div>
+          <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <div class="card-header"><h2>Overall Completion</h2></div>
+          <div class="chart-wrap chart-wrap-sm"><canvas id="doughnutChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Recent updates -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Recent Activity</h2>
+          <button class="btn btn-sm btn-ghost" onclick="showSection('updates')">View all →</button>
+        </div>
+        <div id="recentUpdates" class="card-body">
+          <!-- Skeleton loader -->
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row" style="width:85%"></div>
+          <div class="skeleton-row" style="width:70%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SUBMIT UPDATE ══ -->
+    <section id="section-submit" class="section">
+      <div id="editBanner" class="edit-banner hidden">
+        ✏️ Editing existing record —
+        <button class="cancel-edit-btn" onclick="cancelEdit()">✖ Cancel</button>
+      </div>
+      <!-- Duplicate warning -->
+      <div id="duplicateWarning" class="duplicate-warn hidden">
+        ⚠️ An update for this site already exists today. Submit anyway?
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 id="formTitle">📝 Submit Daily Update</h2>
+          <!-- Progress bar showing form completion -->
+          <div class="form-progress">
+            <div class="form-progress-bar" id="formProgressBar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <form id="updateForm" enctype="multipart/form-data">
+            <div class="form-row">
+              <div class="form-group">
+                <label>📅 Date</label>
+                <input type="date" id="date" required oninput="updateFormProgress()"/>
+              </div>
+              <div class="form-group">
+                <label>🏗️ Site Name</label>
+                <input type="text" id="siteName" placeholder="e.g. Tower Block A" required oninput="updateFormProgress(); checkDuplicate()"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>🔨 Work Done Today</label>
+              <textarea id="workDone" rows="3" placeholder="Describe work completed today..." required oninput="updateFormProgress()"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>👷 Number of Workers</label>
+                <input type="number" id="numberOfWorkers" placeholder="e.g. 15" min="1" required oninput="updateFormProgress()"/>
+              </div>
+              <div class="form-group">
+                <label>📊 Progress <span id="progressDisplay" class="progress-display">0%</span></label>
+                <input type="range" id="progressPercentage" min="0" max="100" value="0" class="range-slider" oninput="updateProgressDisplay(this.value); updateFormProgress()"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>🧱 Materials Used</label>
+              <input type="text" id="materialsUsed" placeholder="e.g. 200 bricks, 10 bags cement" required oninput="updateFormProgress()"/>
+            </div>
+            <div class="form-group">
+              <label>📸 Site Photo <span class="optional-tag">optional</span></label>
+              <div class="file-upload-wrap">
+                <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(this)"/>
+                <label for="photoInput" class="file-upload-label">📁 Choose Photo (max 5MB)</label>
+              </div>
+              <div id="photoPreview" class="photo-preview hidden">
+                <img id="previewImg" src="" alt="Preview"/>
+                <button type="button" class="remove-photo-btn" onclick="removePhoto()">✖</button>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="submitBtn">✅ Submit Update</button>
+            </div>
+          </form>
+          <div id="formMessage" class="message hidden"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ ALL UPDATES ══ -->
+    <section id="section-updates" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h2>All Updates</h2>
+          <button class="btn btn-sm btn-ghost" onclick="loadUpdates()">🔄 Refresh</button>
+        </div>
+
+        <!-- Role tabs — contractor/admin tab hidden for builders -->
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('view', this)">👁️ View</button>
+          <button class="tab-btn" id="manageTabBtn" onclick="switchTab('manage', this)">⚙️ Manage</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="search-bar">
+          <div class="search-group">
+            <label>🔍 Site</label>
+            <input type="text" id="searchSite" placeholder="Search site..." oninput="applyFilters()"/>
+          </div>
+          <div class="search-group">
+            <label>📅 From</label>
+            <input type="date" id="fromDate" onchange="applyFilters()"/>
+          </div>
+          <div class="search-group">
+            <label>📅 To</label>
+            <input type="date" id="toDate" onchange="applyFilters()"/>
+          </div>
+          <!-- Progress filter -->
+          <div class="search-group">
+            <label>📊 Min Progress</label>
+            <input type="number" id="minProgress" placeholder="0" min="0" max="100" oninput="applyFilters()"/>
+          </div>
+          <div class="search-group">
+            <label>&nbsp;</label>
+            <button class="btn btn-sm btn-ghost" onclick="clearFilters()">✖ Clear</button>
+          </div>
+        </div>
+
+        <!-- Results count -->
+        <div class="results-bar">
+          <span id="resultsCount">Loading...</span>
+        </div>
+
+        <p id="loadingText" class="loading-text">Loading updates...</p>
+        <div id="updatesContainer" class="card-body-table"></div>
+      </div>
+    </section>
+
+    <!-- ══ SITE PROGRESS ══ -->
+    <section id="section-sites" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h2>Site-wise Progress</h2>
+          <button class="btn btn-sm btn-ghost" onclick="loadSiteProgress()">🔄 Refresh</button>
+        </div>
+        <p id="sitesLoadingText" class="loading-text card-body">Loading sites...</p>
+        <div id="sitesContainer" class="card-body"></div>
+      </div>
+    </section>
+
+    <!-- ══ ADMIN PANEL (admin only) ══ -->
+    <section id="section-admin" class="section">
+      <div class="card">
+        <div class="card-header"><h2>🛡️ Admin Panel</h2></div>
+        <div class="card-body">
+          <!-- Permissions matrix -->
+          <h3 class="section-sub-title">Role Permissions Matrix</h3>
+          <div class="permissions-table-wrap">
+            <table class="permissions-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th><span class="role-pill builder-pill">👷 Builder</span></th>
+                  <th><span class="role-pill manager-pill">📋 Manager</span></th>
+                  <th><span class="role-pill admin-pill">🔐 Admin</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Submit Update</td>     <td>✅</td><td>✅</td><td>✅</td></tr>
+                <tr><td>View Own Updates</td>  <td>✅</td><td>✅</td><td>✅</td></tr>
+                <tr><td>View ALL Updates</td>  <td>❌</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Edit Records</td>      <td>❌</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Delete Records</td>    <td>❌</td><td>❌</td><td>✅</td></tr>
+                <tr><td>Dashboard & Charts</td><td>❌</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Site Progress</td>     <td>❌</td><td>✅</td><td>✅</td></tr>
+                <tr><td>CSV Export</td>        <td>❌</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Print Report</td>      <td>❌</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Admin Panel</td>       <td>❌</td><td>❌</td><td>✅</td></tr>
+                <tr><td>Notification Bell</td> <td>❌</td><td>✅</td><td>✅</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Registered project accounts -->
+          <h3 class="section-sub-title" style="margin-top:28px">Registered Project Accounts</h3>
+          <div class="creds-admin-grid" id="projectUsersList">
+            <p class="loading-text">Loading accounts...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
+    <img id="lightboxImg" src="" alt="Site Photo"/>
+    <button class="lightbox-close" onclick="closeLightbox()">✖</button>
+  </div>
+
+  <!-- Print area -->
+  <div id="printArea" class="print-area"></div>
+
+  <script src="js/app.js"></script>
+
+  <!-- Role guard + sidebar setup -->
+  <script>
+    const _role        = localStorage.getItem('role');
+    const _username    = localStorage.getItem('username') || 'User';
+    const _projectId   = localStorage.getItem('projectId');
+    const _projectName = localStorage.getItem('projectName') || 'Project';
+    if (!_role || !_projectId) window.location.href = '/login.html';
+
+    // Sidebar user info
+    document.getElementById('sidebarName').textContent   = _username;
+    document.getElementById('sidebarRole').textContent   = _role;
+    document.getElementById('sidebarProject').textContent = _projectName;
+    document.getElementById('sidebarAvatar').textContent = _username.charAt(0).toUpperCase();
+
+    // Role dot colour
+    const dotColors = { builder: '#F59E0B', manager: '#22C55E', admin: '#A855F7' };
+    const dot = document.getElementById('roleDotSidebar');
+    dot.style.background  = dotColors[_role] || '#F59E0B';
+    dot.style.boxShadow   = '0 0 8px ' + (dotColors[_role] || '#F59E0B');
+    document.getElementById('roleBadgeText').textContent = _role.charAt(0).toUpperCase() + _role.slice(1);
+
+    // Role-based UI restrictions
+    if (_role === 'builder') {
+      // Builder only sees Submit form
+      document.getElementById('nav-dashboard').style.display = 'none';
+      document.getElementById('nav-updates').style.display   = 'none';
+      document.getElementById('nav-sites').style.display     = 'none';
+      document.getElementById('manageTabBtn').style.display  = 'none';
+      // Show submit section immediately
+      setTimeout(() => showSection('submit'), 0);
+    }
+    if (_role === 'admin') {
+      // Admin sees everything including admin panel nav
+      document.querySelector('.nav-admin-only').classList.remove('hidden');
+    }
+    if (_role === 'manager' || _role === 'admin') {
+      // Topbar actions visible
+    } else {
+      // Builder: hide topbar export/print/bell
+      document.querySelectorAll('.topbar-actions .icon-btn').forEach(b => b.style.display = 'none');
+    }
+
+    // Restore theme preference
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SiteTrack | Project Access</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/login.css"/>
+</head>
+<body>
+  <a class="landing-link" href="/">SiteTrack home</a>
+
+  <div class="bg-mesh"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="login-split">
+    <div class="login-left">
+      <div class="login-left-inner">
+        <div class="brand-mark">ST</div>
+        <h1 class="brand-name">SiteTrack</h1>
+        <p class="brand-tagline">Project-based access for site teams</p>
+
+        <div class="role-showcase">
+          <div class="role-card-preview" id="preview-builder">
+            <span class="role-dot builder"></span>
+            <div>
+              <strong>Builder</strong>
+              <span>Submit daily logs and photos</span>
+            </div>
+          </div>
+          <div class="role-card-preview" id="preview-manager">
+            <span class="role-dot manager"></span>
+            <div>
+              <strong>Manager</strong>
+              <span>Monitor sites and reports</span>
+            </div>
+          </div>
+          <div class="role-card-preview" id="preview-admin">
+            <span class="role-dot admin"></span>
+            <div>
+              <strong>Admin</strong>
+              <span>Control accounts and records</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="left-footer">
+          Create one project workspace per construction project.
+        </div>
+      </div>
+    </div>
+
+    <div class="login-right">
+      <div class="login-form-wrap">
+        <div class="auth-switch" aria-label="Access mode">
+          <button class="auth-mode active" id="modeLogin" type="button">Sign in</button>
+          <button class="auth-mode" id="modeProject" type="button">New project</button>
+        </div>
+
+        <section id="loginPane">
+          <h2 class="form-title">Project sign in</h2>
+          <p class="form-sub">Choose the project, role, and account assigned to you.</p>
+
+          <div class="field-group">
+            <label for="projectSelect">Project</label>
+            <div class="select-wrap">
+              <select id="projectSelect" required>
+                <option value="">Loading projects...</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="role-tabs">
+            <button class="role-tab active" id="tab-builder" type="button" onclick="switchRole('builder')">Builder</button>
+            <button class="role-tab" id="tab-manager" type="button" onclick="switchRole('manager')">Manager</button>
+            <button class="role-tab" id="tab-admin" type="button" onclick="switchRole('admin')">Admin</button>
+          </div>
+
+          <div class="role-strip" id="roleStrip">
+            <span id="roleStripText">Log daily work, materials, and on-site progress</span>
+          </div>
+
+          <form id="loginForm">
+            <div class="field-group">
+              <label for="username">Username</label>
+              <div class="input-wrap">
+                <span class="input-icon">ID</span>
+                <input type="text" id="username" placeholder="Enter username" autocomplete="username" required/>
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="password">Password</label>
+              <div class="input-wrap">
+                <span class="input-icon">PW</span>
+                <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" required/>
+              </div>
+            </div>
+
+            <button type="submit" class="sign-in-btn" id="loginBtn">
+              <span id="btnText">Sign in</span>
+              <span id="btnLoader" class="btn-loader hidden"></span>
+            </button>
+          </form>
+
+          <div id="loginMessage" class="login-msg hidden"></div>
+        </section>
+
+        <section id="projectPane" class="hidden">
+          <h2 class="form-title">New project</h2>
+          <p class="form-sub">Create the workspace and register the first admin, manager, and builder.</p>
+
+          <form id="projectForm">
+            <div class="form-grid two">
+              <div class="field-group">
+                <label for="projectName">Project name</label>
+                <input class="plain-input" type="text" id="projectName" placeholder="Metro Tower Phase 2" required/>
+              </div>
+              <div class="field-group">
+                <label for="projectCode">Project code</label>
+                <input class="plain-input" type="text" id="projectCode" placeholder="Optional"/>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="projectLocation">Location</label>
+              <input class="plain-input" type="text" id="projectLocation" placeholder="City, site zone, or address"/>
+            </div>
+
+            <div class="account-block">
+              <h3>Admin account</h3>
+              <div class="form-grid three">
+                <input class="plain-input" type="text" id="adminName" placeholder="Full name"/>
+                <input class="plain-input" type="text" id="adminUsername" placeholder="Username" required/>
+                <input class="plain-input" type="password" id="adminPassword" placeholder="Password" required/>
+              </div>
+            </div>
+
+            <div class="account-block">
+              <h3>Manager account</h3>
+              <div class="form-grid three">
+                <input class="plain-input" type="text" id="managerName" placeholder="Full name"/>
+                <input class="plain-input" type="text" id="managerUsername" placeholder="Username" required/>
+                <input class="plain-input" type="password" id="managerPassword" placeholder="Password" required/>
+              </div>
+            </div>
+
+            <div class="account-block">
+              <h3>Builder account</h3>
+              <div class="form-grid three">
+                <input class="plain-input" type="text" id="builderName" placeholder="Full name"/>
+                <input class="plain-input" type="text" id="builderUsername" placeholder="Username" required/>
+                <input class="plain-input" type="password" id="builderPassword" placeholder="Password" required/>
+              </div>
+            </div>
+
+            <button type="submit" class="sign-in-btn project-btn" id="projectBtn">
+              <span id="projectBtnText">Create project</span>
+              <span id="projectBtnLoader" class="btn-loader hidden"></span>
+            </button>
+          </form>
+
+          <div id="projectMessage" class="login-msg hidden"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/login.js"></script>
+  <script>
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;animation-delay:${Math.random()*8}s;animation-duration:${6+Math.random()*6}s`;
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>

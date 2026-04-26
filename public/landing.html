@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SiteTrack | Construction Progress Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/landing.css"/>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>SiteTrack</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#features">Features</a>
+      <a href="#workflow">Workflow</a>
+      <a href="/login.html?mode=project" id="navProject">New project</a>
+      <a href="/login.html" id="navLogin">Sign in</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="SiteTrack overview">
+      <img class="hero-image" src="assets/landing-hero.png" alt="Construction site with workers and progress tracking equipment"/>
+      <div class="hero-shade"></div>
+      <div class="hero-content">
+        <p class="eyebrow">Daily construction progress platform</p>
+        <h1>SiteTrack</h1>
+        <p class="hero-copy">
+          Keep site updates, worker counts, materials, photos, and progress reports in one clean system built for builders, managers, and admins.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="/login.html" id="primaryCta">Sign in</a>
+          <a class="btn btn-secondary" href="/login.html?mode=project" id="setupCta">New project</a>
+        </div>
+      </div>
+      <div class="hero-metrics" aria-label="Platform highlights">
+        <div>
+          <strong>Daily</strong>
+          <span>site logs</span>
+        </div>
+        <div>
+          <strong>3 roles</strong>
+          <span>access control</span>
+        </div>
+        <div>
+          <strong>Live</strong>
+          <span>progress views</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="overview-band">
+      <div class="section-copy">
+        <p class="eyebrow">From field notes to decisions</p>
+        <h2>Run the site from daily proof, not scattered messages.</h2>
+        <p>
+          SiteTrack turns each update into a searchable record with progress, labor, materials, and photo evidence, so supervisors can see what changed without chasing every crew.
+        </p>
+      </div>
+      <div class="product-preview" aria-label="Dashboard preview">
+        <div class="preview-top">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="preview-grid">
+          <div class="preview-stat">
+            <span>Total updates</span>
+            <strong>128</strong>
+          </div>
+          <div class="preview-stat green">
+            <span>Active sites</span>
+            <strong>14</strong>
+          </div>
+          <div class="preview-stat blue">
+            <span>Avg progress</span>
+            <strong>67%</strong>
+          </div>
+        </div>
+        <div class="preview-chart">
+          <span style="height:44%"></span>
+          <span style="height:72%"></span>
+          <span style="height:58%"></span>
+          <span style="height:88%"></span>
+          <span style="height:63%"></span>
+        </div>
+        <div class="preview-row">
+          <span>Tower Block A</span>
+          <strong>82%</strong>
+        </div>
+        <div class="preview-row">
+          <span>North Wing Slab</span>
+          <strong>54%</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="features-band" id="features">
+      <div class="section-heading">
+        <p class="eyebrow">Built for site teams</p>
+        <h2>Every role gets the right view.</h2>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <span class="feature-icon amber"></span>
+          <h3>Daily site logs</h3>
+          <p>Capture work done, worker count, materials used, progress percentage, and optional site photos.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon green"></span>
+          <h3>Manager oversight</h3>
+          <p>Review all updates, filter by site or date, and watch progress trends across every active location.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon blue"></span>
+          <h3>Admin control</h3>
+          <p>Keep permissions tidy with a separate admin panel for system access and record management.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon red"></span>
+          <h3>Reports ready</h3>
+          <p>Export CSV files or print clean progress reports when leadership needs a fast status snapshot.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="workflow-band" id="workflow">
+      <div class="section-copy">
+        <p class="eyebrow">Simple operating rhythm</p>
+        <h2>Capture, review, act.</h2>
+      </div>
+      <div class="workflow-list">
+        <div class="workflow-step">
+          <span>01</span>
+          <h3>Builders submit the day</h3>
+          <p>Field teams log work while details are still fresh.</p>
+        </div>
+        <div class="workflow-step">
+          <span>02</span>
+          <h3>Managers inspect progress</h3>
+          <p>Supervisors compare updates, charts, and site status.</p>
+        </div>
+        <div class="workflow-step">
+          <span>03</span>
+          <h3>Admins keep records clean</h3>
+          <p>Project leads control edits, deletes, reports, and access.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div>
+        <p class="eyebrow">Start from today's update</p>
+        <h2>Bring the project record into one place.</h2>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-primary" href="/login.html?mode=project" id="bottomCta">Create new project</a>
+        <a class="btn btn-dark" href="/login.html">Sign in</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/landing.js"></script>
+</body>
+</html>
