@@ -52,14 +52,33 @@ construction-tracker/
 
 ```bash
 npm install
+$env:MONGODB_URI="your_mongodb_connection_string"
 npm start
 ```
 
 Open:
 
 ```text
-http://localhost:4000
+http://localhost:4001
 ```
+
+## Deploy on Vercel
+
+1. Push this project to GitHub.
+2. Import the repository in Vercel.
+3. In Vercel project settings, add environment variable:
+
+  - `MONGODB_URI` = your MongoDB connection string
+
+4. Deploy.
+
+This repository includes `vercel.json` so all routes are served through the Express app.
+
+### Important Note About Uploads on Vercel
+
+Uploaded images are written to `/tmp/uploads` on Vercel, which is temporary storage. Files can disappear between invocations or deployments.
+
+For production-grade uploads, use persistent object storage such as Cloudinary, AWS S3, or Vercel Blob.
 
 ## Simple Workflow
 

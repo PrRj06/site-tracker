@@ -7,9 +7,12 @@ const fs = require('fs');
 const Project = require('./models/Project');
 
 const app = express();
-const PORT = 4001;
+const PORT = process.env.PORT || 4001;
 const VALID_ROLES = ['builder', 'manager', 'admin'];
-const uploadDir = path.join(__dirname, 'public/uploads');
+const isVercel = !!process.env.VERCEL;
+const uploadDir = isVercel
+  ? path.join('/tmp', 'uploads')
+  : path.join(__dirname, 'public/uploads');
 
 fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -29,6 +32,10 @@ app.use(cors());
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
 app.use(express.static(path.join(__dirname, 'public')));
+if (isVercel) {
+  // Vercel's filesystem is read-only except /tmp.
+  app.use('/uploads', express.static(uploadDir));
+}
 
 function normalizeUsername(username) {
   return String(username || '').trim().toLowerCase();
@@ -179,11 +186,34 @@ app.get('/project-users', async (req, res) => {
   }
 });
 
-mongoose.connect("mongodb://kritik:motupatlu12@ac-6738loo-shard-00-00.ubxeilg.mongodb.net:27017,ac-6738loo-shard-00-01.ubxeilg.mongodb.net:27017,ac-6738loo-shard-00-02.ubxeilg.mongodb.net:27017/construction_tracker?ssl=true&replicaSet=atlas-zsog0g-shard-0&authSource=admin&retryWrites=true&w=majority")
-  .then(() => console.log('MongoDB connected.'))
-  .catch(err => console.error('MongoDB error:', err.message));
+const mongoUri = process.env.MONGODB_URI;
+let mongoConnectPromise;
+
+function connectToMongo() {
+  if (!mongoUri) {
+    console.error('Missing MONGODB_URI environment variable.');
+    return Promise.resolve();
+  }
+
+  if (!mongoConnectPromise) {
+    mongoConnectPromise = mongoose.connect(mongoUri)
+      .then(() => console.log('MongoDB connected.'))
+      .catch(err => {
+        console.error('MongoDB error:', err.message);
+        mongoConnectPromise = null;
+      });
+  }
+
+  return mongoConnectPromise;
+}
+
+connectToMongo();
 
 const updateRoutes = require('./routes/updates');
 app.use('/', updateRoutes);
 
-app.listen(PORT, () => console.log(`Running at http://localhost:${PORT}`));
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`Running at http://localhost:${PORT}`));
+}
+
+module.exports = app;
